@@ -4,26 +4,32 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Customer model
 type Customer struct {
-	ID    string
-	Money float64
-	Cart  []Product
+	ID    primitive.ObjectID `bson:"_id,omitempty"`
+	Money float64            `json:"money"`
+	Spent float64            `json:"spent"`
+	Cart  []Product          `json:"cart"`
 }
 
 // NewCustomer returns a new Customer model
 func NewCustomer() *Customer {
-	id := uuid.New().String()
+	// id := uuid.New().String()
 	money := genRandomMoney(0, 200)
-	return &Customer{id, money, []Product{}}
+	return &Customer{Money: money, Cart: []Product{}}
 }
 
 // AddProduct adds a Product to the Customer cart
 func (c *Customer) AddProduct(product Product) {
 	c.Cart = append(c.Cart, product)
+}
+
+// TotalSpent set the Spent attribute on the model
+func (c *Customer) TotalSpent(amount float64) {
+	c.Spent = amount
 }
 
 func genRandomMoney(min, max int) float64 {

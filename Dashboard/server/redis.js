@@ -1,17 +1,18 @@
 const redis = require("redis")
 
-const port = 6379
-const host = "redis"
+const port = process.env.NUXT_ENV_REDIS_PORT
+const host = process.env.NUXT_ENV_REDIS_HOST
 
 const connect = ()=> {
     var client = redis.createClient(port, host)
     return client
 }
 
-const getProductList = ()=> {
+const getRedisStream = ()=> {
     return new Promise((resolve, reject)=> {
         client = connect()
-        client.smembers('products', (err, list)=> {
+        client.smembers('stream', (err, list)=> {
+            client.end(true)
             if(err) {
                 return reject(err)
             }
@@ -20,39 +21,6 @@ const getProductList = ()=> {
     })
 }
 
-const getProduct = (key)=> {
-    return new Promise((resolve, reject)=> {
-        client.hgetall(key, (err, product)=> {
-            if(err)
-            {
-                return reject(err)
-            }
-            return resolve(product)
-        })
-    })
-}
-
-const getProducts = async (list)=> {
-    let products = []
-    for(let i = 0; i < list.length; i++)
-    {
-        let product = await getProduct(list[i])
-        products.push(product)
-    }
-    return products
-}
-
-const keyToString = (key)=> {
-    return key.split(':').join(' ')
-}
-
-const toKey = (raw)=> {
-    return raw.split(' ').join(':')
-}
-
 module.exports = {
-    getProductList,
-    getProducts,
-    keyToString,
-    toKey
+    getRedisStream
 }

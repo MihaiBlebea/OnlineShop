@@ -1,39 +1,62 @@
 package main
 
 import (
-	"github.com/go-redis/redis"
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-const listKey = "customers"
-
-// CustomerRepository struct
+// CustomerRepository acts like a layer between the domain and the persistence layer
 type CustomerRepository struct {
-	connection *redis.Client
 }
 
-// Add adds a new Customer to the CustomerRepository
-func (cr *CustomerRepository) Add(customer *Customer) error {
-	key := customer.ID
-
-	cr.connection.HSet(key, "id", customer.ID)
-
-	// Calculate cart total
-	total := 0.0
-	cart := ""
-	for _, product := range customer.Cart {
-		total += product.Price
-		cart += product.ID + "|"
+// Add inserts a new document in the roducts collection
+func (cr *CustomerRepository) Add(customer *Customer) (interface{}, error) {
+	client, err := newMongoConnection()
+	if err != nil {
+		return nil, err
 	}
-	cr.connection.HSet(key, "total", total)
-	cr.connection.HSet(key, "cart", cart)
+	ctx := context.TODO()
+	defer client.Disconnect(ctx)
 
-	// Add the new customer to the list of customers
-	cr.connection.SAdd(listKey, key)
+	db := client.Database("customers")
+	customerCollection := db.Collection("customers")
 
-	return nil
+	result, err := customerCollection.InsertOne(ctx, customer)
+	if err != nil {
+		return nil, err
+	}
+	return result.InsertedID, nil
+}
+
+// All returns all the documents in the collection
+func (cr *CustomerRepository) All() ([]Customer, error) {
+	customers := []Customer{}
+
+	client, err := newMongoConnection()
+	if err != nil {
+		return customers, err
+	}
+	ctx := context.TODO()
+	defer client.Disconnect(ctx)
+
+	db := client.Database("customers")
+	customerCollection := db.Collection("customers")
+
+	cursor, err := customerCollection.Find(ctx, bson.D{})
+	if err != nil {
+		return customers, err
+	}
+
+	err = cursor.All(ctx, &customers)
+	if err != nil {
+		return customers, err
+	}
+
+	return customers, nil
 }
 
 // NewCustomerRepo constructs and returns a new CustomerRepository struct
-func NewCustomerRepo(connection *redis.Client) *CustomerRepository {
-	return &CustomerRepository{connection}
+func NewCustomerRepo() *CustomerRepository {
+	return &CustomerRepository{}
 }

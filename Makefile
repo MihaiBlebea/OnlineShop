@@ -9,6 +9,9 @@ up:
 down:
 	docker-compose down
 
+push:
+	docker-compose push
+
 inspect-redis:
 	docker exec -it redis redis-cli
 

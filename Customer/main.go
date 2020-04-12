@@ -1,39 +1,28 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"context"
 
-	"github.com/go-redis/redis"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-
-	// Create customer
-	// customer := NewCustomer()
-	client := newRedisClient("redis", "6379")
-	productRepo := NewProductRepo(client)
-
-	for {
-		_, err := productRepo.FindByMoney(200.00)
-		if err != nil {
-			fmt.Println(err)
-		}
-		time.Sleep(10 * time.Second)
-	}
-
-	// Check if product quantity > 0
-
-	// Remove product from product repo
-
-	// Add product to customer cart
-
-	// Save customer in customer repo
+	// Http server
+	serve()
 }
 
-func newRedisClient(host, port string) *redis.Client {
-	client := redis.NewClient(&redis.Options{
-		Addr: host + ":" + port,
-	})
-	return client
+func newMongoConnection() (*mongo.Client, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb_customer:27017"))
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.TODO()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

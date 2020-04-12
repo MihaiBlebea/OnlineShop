@@ -1,16 +1,16 @@
 <template>
     <div class="container my-5">
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-md-6">
-                <ProductTotal :products="products" />
-
-                <Product v-for="(product, index) in orderedProducts" 
-                    :key="index" 
-                    :title="product.title" 
-                    :price="product.price"
-                    :image="product.filename"
-                    :quantity="product.quantity"
-                    :description="product.description" />
+                <Products :data="products" />
+            </div>
+            <div class="col-md-6">
+                <Customers :data="customers" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+               <Events :stream="events" />
             </div>
         </div>
     </div>
@@ -18,54 +18,56 @@
 
 <script>
 import axios from 'axios'
-import Product from '~/components/Product.vue'
-import ProductTotal from '~/components/ProductTotal.vue'
+import Events from '~/components/Events.vue'
+import Products from'~/components/Products.vue'
+import Customers from '~/components/Customers.vue'
 
 export default {
     components: {
-        Product,
-        ProductTotal
-    },
-    asyncData: async function()
-    {
-        try {
-            let products = await axios.get('/api/products?detailed=true')
-            return {
-                products: products.data
-            }
-        } catch(err) {
-            console.error(err)
-            return {
-                products: []
-            }
-        }
+        Events,
+        Products,
+        Customers
     },
     data: function()
     {
         return {
-            products: []
-        }
-    },
-    computed: {
-        orderedProducts: function()
-        {
-            if(this.products.length === 0)
-            {
-                return []
-            }
-            return this.products.sort((a, b)=> { 
-                return b.title - a.title
-            })
+            events: [],
+            products: [],
+            customers: []
         }
     },
     methods: {
+        fetchEventStream: async function()
+        {
+            try {
+                let { data } = await axios.get('/api/event-stream')
+                let stream = data.map((event)=> {
+                    return JSON.parse(event)
+                })
+                return stream
+            } catch(err) {
+                console.log(err)
+                return []
+            }
+        },
         fetchProducts: async function()
         {
             try {
-                let products = await axios.get('/api/products?detailed=true')
-                return products.data
+                let { data } = await axios.get(`http://${ process.env.NUXT_ENV_SHOP_URL }/products`)
+                return data
             } catch(err) {
-                console.error(err)
+                console.log(err)
+                return []
+            }
+        },
+        fetchCustomers: async function()
+        {
+            try {
+                let { data } = await axios.get(`http://${ process.env.NUXT_ENV_CUSTOMER_URL }/customers`)
+                console.log(data)
+                return data
+            } catch(err) {
+                console.log(err)
                 return []
             }
         },
@@ -77,8 +79,10 @@ export default {
     mounted: async function()
     {
         while(true) {
+            this.events = await this.fetchEventStream()
+            this.customers = await this.fetchCustomers()
             this.products = await this.fetchProducts()
-            await this.sleep(3000)
+            await this.sleep(10 * 1000)
         }
     }
 }

@@ -1,40 +1,37 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
+	// Populate database from json file
 	products, err := fetchData("products.json")
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
-	client := newRedisClient("redis", "6379")
+	productRepo := NewProductRepo()
+	productRepo.AddMany(products)
 
-	repo := NewProductRepo(client)
-
-	// Loop
-	for {
-		index := genRandom(0, len(products))
-		product := products[index]
-		fmt.Println(product)
-		repo.Add(&product)
-		time.Sleep(3 * time.Second)
-	}
+	// Http server
+	serve()
 }
 
-func newRedisClient(host, port string) *redis.Client {
-	client := redis.NewClient(&redis.Options{
-		Addr: host + ":" + port,
-	})
-	return client
+func find(list []string, value string) (int, bool) {
+	for i, item := range list {
+		if item == value {
+			return i, true
+		}
+	}
+	return -1, false
 }
 
 func genRandom(min, max int) int {
@@ -51,4 +48,19 @@ func fetchData(filePath string) ([]Product, error) {
 
 	json.Unmarshal([]byte(file), &products)
 	return products, nil
+}
+
+func newMongoConnection() (*mongo.Client, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb_shop:27017"))
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.TODO()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

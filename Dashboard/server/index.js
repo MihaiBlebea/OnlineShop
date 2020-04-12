@@ -3,7 +3,7 @@ const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
 
-const { getProductList, getProducts, keyToString } = require("./redis")
+const { getRedisStream } = require("./redis")
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
@@ -22,24 +22,12 @@ async function start() {
         await builder.build()
     }
 
-    app.get("/api/products", async (request, response) => {
+    app.get("/api/event-stream", async (request, response) => {
         try {
-            // if detailed query is set
-            detailed = request.query.detailed
-            console.log('detailed', detailed)
-            let list = await getProductList()
-
-            if(!detailed || detailed === 'false')
-            {
-                list = list.map((product)=> {
-                    return keyToString(product)
-                })
-                return response.json(list)
-            }
-            let products = await getProducts(list)
-            return response.json(products)
+            let result = await getRedisStream()
+            return response.json(result)
         } catch(err) {
-            console.error(err)
+            console.log(err)
             return response.json([])
         }
     })

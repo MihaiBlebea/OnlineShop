@@ -26,11 +26,7 @@ RUN apk add ca-certificates
 
 WORKDIR /app
 
-COPY products.json .
-
 COPY --from=build_base /tmp/go-sample-app/out/go-sample-app /app/go-sample-app
-
-EXPOSE 8000
 
 # Run the binary program produced by `go install`
 CMD ["/app/go-sample-app"]
