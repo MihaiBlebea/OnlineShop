@@ -16,7 +16,7 @@ func main() {
 	// Populate database from json file
 	products, err := fetchData("products.json")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	productRepo := NewProductRepo()
 	productRepo.AddMany(products)
@@ -51,7 +51,7 @@ func fetchData(filePath string) ([]Product, error) {
 }
 
 func newMongoConnection() (*mongo.Client, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb_shop:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb-shop:27017"))
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,7 @@ version: "3.7"
 services:
     shop:
         build: ./Shop
-        image: serbanblebea/online-shop-shop:v0.1
+        image: serbanblebea/online-shop-shop:v0.3
         container_name: shop
         ports:
             - 8077:8000
@@ -11,12 +11,12 @@ services:
             - shop
             - backend
         depends_on: 
-            - mongodb_shop
+            - mongodb-shop
             - redis
         restart: on-failure
     customer:
         build: ./Customer
-        image: serbanblebea/online-shop-customer:v0.1
+        image: serbanblebea/online-shop-customer:v0.2
         container_name: customer
         ports:
             - 8076:8000
@@ -24,12 +24,12 @@ services:
             - customer
             - backend
         depends_on: 
-            - mongodb_customer
+            - mongodb-customer
             - redis
         restart: on-failure
     worker:
         build: ./Worker
-        image: serbanblebea/online-shop-worker:v0.1
+        image: serbanblebea/online-shop-worker:v0.2
         container_name: worker
         networks:
             - backend
@@ -37,16 +37,16 @@ services:
             - shop
             - customer
         restart: on-failure
-    mongodb_shop:
+    mongodb-shop:
         image: mongo:latest
-        container_name: mongodb_shop
+        container_name: mongodb-shop
         networks:
             - shop
         ports:
             - 27016:27017
-    mongodb_customer:
+    mongodb-customer:
         image: mongo:latest
-        container_name: mongodb_customer
+        container_name: mongodb-customer
         networks:
             - customer
         ports:
@@ -60,7 +60,7 @@ services:
             - backend
     dashboard:
         build: ./Dashboard
-        image: serbanblebea/online-shop-dashboard:v0.1
+        image: serbanblebea/online-shop-dashboard:v0.3
         container_name: dashboard
         depends_on: 
             - redis

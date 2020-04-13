@@ -3,11 +3,11 @@
         <div class="card-body">
             <p class="d-flex justify-content-between">
                 <span>Total</span>
-                <span>{{ totalCount }}</span>
+                <span>{{ totalCount }} customers</span>
             </p>
             <p class="d-flex justify-content-between">
                 <span>Total spent</span>
-                <span>{{ totalSpent }}</span>
+                <span>£{{ totalSpent }}</span>
             </p>
             <p class="d-flex justify-content-between">
                 <span>Avr. customer spent</span>

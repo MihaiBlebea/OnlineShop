@@ -16,6 +16,7 @@ const port = ":8000"
 func serve() {
 	router := httprouter.New()
 
+	router.GET("/", indexHandler)
 	router.POST("/customer", createCustomerHandler)
 	router.GET("/customers", getCustomersHandler)
 
@@ -29,6 +30,24 @@ func setupHeaders(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Content-Type", "application/json; charset=UTF-8")
 	(*w).WriteHeader(http.StatusOK)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	setupHeaders(&w)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	health := make(map[string]string)
+	health["status"] = "OK"
+
+	jsonHealth, err := json.Marshal(health)
+	if err != nil {
+		log.Panic(err)
+	}
+	err = json.NewEncoder(w).Encode(jsonHealth)
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func createCustomerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

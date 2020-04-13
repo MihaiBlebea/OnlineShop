@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -35,7 +36,10 @@ func (pr *ProductRepository) Add(product *Product) error {
 func (pr *ProductRepository) AddMany(products []Product) {
 	for _, product := range products {
 		product.IncrementQuantity()
-		pr.Add(&product)
+		err := pr.Add(&product)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
