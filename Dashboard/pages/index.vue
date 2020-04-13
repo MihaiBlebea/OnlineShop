@@ -53,7 +53,7 @@ export default {
         fetchProducts: async function()
         {
             try {
-                let { data } = await axios.get(`http://${ process.env.NUXT_ENV_SHOP_URL }/products`)
+                let { data } = await axios.get(`http://${ this.$env.NUXT_ENV_SHOP_URL }/products`)
                 return data
             } catch(err) {
                 console.log(err)
@@ -63,7 +63,7 @@ export default {
         fetchCustomers: async function()
         {
             try {
-                let { data } = await axios.get(`http://${ process.env.NUXT_ENV_CUSTOMER_URL }/customers`)
+                let { data } = await axios.get(`http://${ this.$env.NUXT_ENV_CUSTOMER_URL }/customers`)
                 return data
             } catch(err) {
                 console.log(err)

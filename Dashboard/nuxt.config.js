@@ -43,6 +43,13 @@ module.exports = {
         '@nuxtjs/axios',
         // Doc: https://github.com/nuxt-community/dotenv-module
         '@nuxtjs/dotenv',
+        ['nuxt-env', {
+            keys: [
+                'TEST_ENV_VAR',
+                { key: 'NUXT_ENV_SHOP_URL', default: 'localhost:8077' },
+                { key: 'NUXT_ENV_CUSTOMER_URL', default: 'localhost:8076' }
+            ]
+        }]
     ],
     /*
     ** Axios module configuration

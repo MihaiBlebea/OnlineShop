@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Event from '~/components/Event.vue'
+import Event from './Event.vue'
 import moment from 'moment'
 
 export default {

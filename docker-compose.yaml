@@ -60,8 +60,11 @@ services:
             - backend
     dashboard:
         build: ./Dashboard
-        image: serbanblebea/online-shop-dashboard:v0.3
+        image: serbanblebea/online-shop-dashboard:v0.4
         container_name: dashboard
+        environment:
+            NUXT_ENV_SHOP_URL: "192.168.50.11:30077"
+            NUXT_ENV_CUSTOMER_URL: "192.168.50.11:30076"
         depends_on: 
             - redis
         restart: on-failure
