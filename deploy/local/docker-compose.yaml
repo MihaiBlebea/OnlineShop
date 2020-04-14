@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
     shop:
-        build: ./Shop
+        build: ./../application/Shop
         image: serbanblebea/online-shop-shop:v0.3
         container_name: shop
         ports:
@@ -15,7 +15,7 @@ services:
             - redis
         restart: on-failure
     customer:
-        build: ./Customer
+        build: ./../application/Customer
         image: serbanblebea/online-shop-customer:v0.2
         container_name: customer
         ports:
@@ -28,7 +28,7 @@ services:
             - redis
         restart: on-failure
     worker:
-        build: ./Worker
+        build: ./../application/Worker
         image: serbanblebea/online-shop-worker:v0.2
         container_name: worker
         networks:
@@ -59,7 +59,7 @@ services:
         networks:
             - backend
     dashboard:
-        build: ./Dashboard
+        build: ./../application/Dashboard
         image: serbanblebea/online-shop-dashboard:v0.4
         container_name: dashboard
         environment:
