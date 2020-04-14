@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
     name: dashboard-deployment
+    namespace: production
     labels:
         app: onlineshop
         name: dashboard-deployment
@@ -19,9 +20,9 @@ spec:
                   image: serbanblebea/online-shop-dashboard:v0.4
                   env:
                     - name: NUXT_ENV_SHOP_URL
-                      value: 192.168.50.12:30077
+                      value: 192.168.50.12:30011
                     - name: NUXT_ENV_CUSTOMER_URL
-                      value: 192.168.50.12:30076
+                      value: 192.168.50.12:30010
     replicas: 1
     selector:
         matchLabels:
@@ -33,6 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
     name: dashboard-external
+    namespace: production
     labels:
         app: onlineshop
         name: dashboard-external
@@ -41,7 +43,7 @@ spec:
     ports:
         - targetPort: 5000
           port: 5000
-          nodePort: 30050
+          nodePort: 30012
     selector:
         app: onlineshop
         name: dashboard-pod
