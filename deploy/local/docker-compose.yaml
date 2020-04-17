@@ -21,7 +21,7 @@ services:
         restart: on-failure
     customer:
         build: ./../../application/Customer
-        image: serbanblebea/online-shop-customer:v0.3
+        image: serbanblebea/online-shop-customer:v0.4
         container_name: customer
         environment:
             REDIS_HOST: "redis"
@@ -42,7 +42,7 @@ services:
         restart: on-failure
     worker:
         build: ./../../application/Worker
-        image: serbanblebea/online-shop-worker:v0.3
+        image: serbanblebea/online-shop-worker:v0.4
         container_name: worker
         networks:
             - backend
