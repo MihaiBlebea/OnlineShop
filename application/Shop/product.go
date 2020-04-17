@@ -2,6 +2,15 @@ package main
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+// SuppliedProduct is a model that keeps track of the supplied products
+type SuppliedProduct struct {
+	ProductID        primitive.ObjectID `json:"product_id"`
+	Title            string             `json:"title"`
+	InitQuantity     int                `json:"initial_quantity"`
+	SuppliedQuantity int                `json:"supplied_quantity"`
+	Cost             float64            `json:"cost"`
+}
+
 // Product is the model for parsing the product json
 type Product struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
@@ -29,4 +38,9 @@ func (p *Product) DecrementQuantity() {
 	if p.Quantity > 0 {
 		p.Quantity--
 	}
+}
+
+// SetQuantity sets the quantity on the product
+func (p *Product) SetQuantity(input int) {
+	p.Quantity = input
 }

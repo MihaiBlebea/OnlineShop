@@ -13,23 +13,23 @@ They decided to split the team of 6 developers into 3 teams:
 Each of the 3 teams are split as such:
 - Blue Team:
     - Engineers:
-        - Mihai is the dev ops engineer
-        - Freddie is the software engineer
+        - Mihai is the senior software engineer
+        - John is the junior software engineer
     - Responsability:
         - Customer microservice
         - Customer mongo database
     
 - Red Team:
     - Engineers:
-        - Elliott is the dev ops engineer
-        - Jack is the software engineer
+        - Marie is the senior software engineer
+        - Jack is the junior software engineer
     - Responsability:
         - Shop microservice
         - Shop mongo database
 
 - Green Team:
     - Engineers:
-        - Theo is the lead engineer
+        - Theo is the lead software engineer
         - Arthur is the junior software enginner
     - Responsability
         - Dashboard microservice

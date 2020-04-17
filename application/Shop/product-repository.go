@@ -127,6 +127,32 @@ func (pr *ProductRepository) FindByPriceAndRating(price float64) ([]Product, err
 	return products, nil
 }
 
+func (pr *ProductRepository) findLowStock() ([]Product, error) {
+	products := []Product{}
+
+	client, err := newMongoConnection()
+	if err != nil {
+		return products, err
+	}
+	ctx := context.TODO()
+	defer client.Disconnect(ctx)
+
+	db := client.Database("shop")
+	productCollection := db.Collection("products")
+
+	cursor, err := productCollection.Find(ctx, bson.D{{Key: "quantity", Value: bson.D{{Key: "$lt", Value: 5}}}})
+	if err != nil {
+		return products, err
+	}
+
+	err = cursor.All(ctx, &products)
+	if err != nil {
+		return products, err
+	}
+
+	return products, nil
+}
+
 // NewProductRepo constructs and returns a new ProductRepository struct
 func NewProductRepo() *ProductRepository {
 	return &ProductRepository{}

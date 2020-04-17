@@ -80,31 +80,40 @@ func supplyHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 
+	supplied := []SuppliedProduct{}
 	productRepo := NewProductRepo()
-	products, err := productRepo.All()
+
+	// Low stock products
+	lsProducts, err := productRepo.All()
 	if err != nil {
 		log.Panic(err)
 	}
 
-	index := genRandom(0, len(products)-1)
-	product := products[index]
-	product.IncrementQuantity()
-	productRepo.UpdateQuantity(&product)
+	for _, product := range lsProducts {
+		diffQuantity := 5 - product.Quantity
+		if diffQuantity > 0 {
+			product.SetQuantity(5)
+			cost := float64(diffQuantity) * product.Price
+			supplied = append(supplied, SuppliedProduct{
+				product.ID,
+				product.Title,
+				product.Quantity,
+				diffQuantity,
+				roundTwoDecimals(cost),
+			})
+		}
+	}
 
-	err = json.NewEncoder(w).Encode(products)
+	err = json.NewEncoder(w).Encode(supplied)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// Logging
 	event := make(map[string]interface{})
-	payload := make(map[string]interface{})
 	event["service"] = "shop"
 	event["code"] = "SHOP_SUPPLIED"
-	payload["product_id"] = product.ID
-	payload["price"] = product.Price
-	payload["quantity"] = product.Quantity
-	event["body"] = payload
+	event["body"] = supplied
 	Log(event)
 }
 
@@ -155,7 +164,7 @@ func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	event := make(map[string]interface{})
 	payload := make(map[string]interface{})
 	prods := []string{}
-	for _, product := range products {
+	for _, product := range cart {
 		prods = append(prods, product.ID.Hex())
 	}
 

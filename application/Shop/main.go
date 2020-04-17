@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/rand"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -34,6 +37,10 @@ func find(list []string, value string) (int, bool) {
 	return -1, false
 }
 
+func roundTwoDecimals(input float64) float64 {
+	return math.Round(input*100) / 100
+}
+
 func genRandom(min, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max-min+1) + min
@@ -51,7 +58,9 @@ func fetchData(filePath string) ([]Product, error) {
 }
 
 func newMongoConnection() (*mongo.Client, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb-shop:27017"))
+	mongoHost := getenv("MONGO_HOST", "localhost")
+	mongoPort := getenv("MONGO_PORT", "27016")
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort))
 	if err != nil {
 		return nil, err
 	}
@@ -63,4 +72,13 @@ func newMongoConnection() (*mongo.Client, error) {
 	}
 
 	return client, nil
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		fmt.Println(fmt.Sprintf("Could not find env for key %s. Returning default value %s", key, fallback))
+		return fallback
+	}
+	return value
 }
