@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
-	"math"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -101,6 +101,8 @@ func supplyHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 				diffQuantity,
 				roundTwoDecimals(cost),
 			})
+
+			productRepo.UpdateQuantity(&product)
 		}
 	}
 
@@ -110,11 +112,7 @@ func supplyHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	}
 
 	// Logging
-	event := make(map[string]interface{})
-	event["service"] = "shop"
-	event["code"] = "SHOP_SUPPLIED"
-	event["body"] = supplied
-	Log(event)
+	Log("SHOP_SUPPLIED", supplied)
 }
 
 func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -122,7 +120,7 @@ func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	if (*r).Method == "OPTIONS" {
 		return
 	}
-
+	fmt.Println(r.Body)
 	decoder := json.NewDecoder(r.Body)
 	type Post struct {
 		Money float64 `json:"money"`
@@ -133,8 +131,8 @@ func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	if err != nil {
 		panic(err)
 	}
-	money := post.Money
 
+	money := post.Money
 	productRepo := NewProductRepo()
 	products, err := productRepo.FindByPriceAndRating(money)
 	if err != nil {
@@ -142,17 +140,20 @@ func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 
 	total := 0.00
-	cart := []Product{}
+	cart := []SoldProduct{}
 	for _, product := range products {
 		if total+product.Price >= money {
 			break
 		}
-		cart = append(cart, product)
+		cart = append(cart, SoldProduct{
+			product.ID,
+			product.Title,
+			product.Price,
+		})
 		total += product.Price
 
-		productClone := product
-		productClone.DecrementQuantity()
-		productRepo.UpdateQuantity(&productClone)
+		product.DecrementQuantity()
+		productRepo.UpdateQuantity(&product)
 	}
 
 	err = json.NewEncoder(w).Encode(cart)
@@ -161,18 +162,5 @@ func orderHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 
 	// Logging
-	event := make(map[string]interface{})
-	payload := make(map[string]interface{})
-	prods := []string{}
-	for _, product := range cart {
-		prods = append(prods, product.ID.Hex())
-	}
-
-	payload["spent"] = math.Round(total*100) / 100
-	payload["money"] = money
-	payload["cart"] = prods
-	event["service"] = "shop"
-	event["code"] = "SHOP_SOLD"
-	event["body"] = payload
-	Log(event)
+	Log("SHOP_SOLD", cart)
 }

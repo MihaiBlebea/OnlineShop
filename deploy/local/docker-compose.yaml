@@ -21,8 +21,16 @@ services:
         restart: on-failure
     customer:
         build: ./../../application/Customer
-        image: serbanblebea/online-shop-customer:v0.2
+        image: serbanblebea/online-shop-customer:v0.3
         container_name: customer
+        environment:
+            REDIS_HOST: "redis"
+            REDIS_PORT: "6379"
+            MONGO_HOST: "mongodb-customer"
+            MONGO_PORT: "27017"
+            SHOP_HOST: "shop"
+            SHOP_PORT: "8000"
+            CUSTOMER_MONEY: "200"
         ports:
             - 8076:8000
         networks: 
@@ -70,6 +78,8 @@ services:
         environment:
             NUXT_ENV_SHOP_URL: "localhost:8077"
             NUXT_ENV_CUSTOMER_URL: "localhost:8076"
+            NUXT_ENV_REDIS_HOST: "redis"
+            NUXT_ENV_REDIS_PORT: "6379"
         depends_on: 
             - redis
         restart: on-failure

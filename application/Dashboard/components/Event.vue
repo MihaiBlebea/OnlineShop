@@ -1,6 +1,10 @@
 <template>
-    <span v-bind:class="{ 'is-blue': isShopEvent, 'is-red': isCustomerEvent }">
-        [{{ parseTimeStamp(event.timestamp) }}]: {{ event.code }} - {{ body }}
+    <span class="is-clickable" v-on:click="toggleExtended()">
+        [{{ parseTimeStamp(event.timestamp) }}]: 
+        <span v-bind:class="{ 'is-blue': isShopEvent, 'is-red': isCustomerEvent }">
+            {{ event.code }} - {{ body }}
+        </span>
+        <pre v-if="extended">{{ event }}</pre>
     </span>
 </template>
 
@@ -12,6 +16,12 @@ export default {
         event: {
             required: true,
             type: Object
+        }
+    },
+    data: function()
+    {
+        return {
+            extended: false
         }
     },
     computed: {
@@ -27,17 +37,22 @@ export default {
         {
             if(this.event.code === 'CUSTOMER_BOUGHT') 
             {
-                return `${ this.event.body.customer_id } had £${ this.event.body.money } and spent £${ this.event.body.spent } on ${ this.event.body.cart.length } products`
+
+                return `${ this.event.body.name } had £${ this.event.body.money } and spent £${ this.event.body.spent } on ${ this.event.body.cart.length } products`
             }
 
             if(this.event.code === 'SHOP_SUPPLIED') 
             {
-                return `Shop now have ${ this.event.body.quantity } of ${ this.event.body.product_id }`
+                let cost = 0
+                this.event.body.forEach((supply)=> {
+                    return cost += supply.cost
+                })
+                return `Shop received ${ this.event.body.length } products for a total cost of £${ this.parseMoney(cost) }`
             }
 
             if(this.event.code === 'SHOP_SOLD') 
             {
-                return `Shop sold ${ this.event.body.cart.length } products for ${ this.event.body.spent }`
+                return `Shop sold ${ this.event.body.length } products for £${ this.event.body.length }`
             }
         }
     },
@@ -46,8 +61,30 @@ export default {
         {
             if(value)
             {
-                return moment(String(value)).format('hh:mm:ss')
+                return moment(String(value)).format('HH:mm')
             }
+        },
+        parseMoney: function(total)
+        {
+            if(total > 1000)
+            {
+                return `${ this.roundAmount(total / 1000) }k`
+            }
+
+            if(total > 1000000)
+            {
+                return `${ this.roundAmount(total / 1000000) }m`
+            }
+
+            return total
+        },
+        roundAmount: function(value)
+        {
+            return Math.round(value * 100) / 100
+        },
+        toggleExtended: function()
+        {
+            this.extended = !this.extended
         }
     }
 }
@@ -59,5 +96,8 @@ export default {
 }
 .is-red {
     color: red;
+}
+.is-clickable {
+    cursor: pointer;
 }
 </style>

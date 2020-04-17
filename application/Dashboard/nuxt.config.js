@@ -47,7 +47,9 @@ module.exports = {
             keys: [
                 'TEST_ENV_VAR',
                 { key: 'NUXT_ENV_SHOP_URL', default: 'localhost:8077' },
-                { key: 'NUXT_ENV_CUSTOMER_URL', default: 'localhost:8076' }
+                { key: 'NUXT_ENV_CUSTOMER_URL', default: 'localhost:8076' },
+                { key: 'NUXT_ENV_REDIS_HOST', default: '127.0.0.1' },
+                { key: 'NUXT_ENV_REDIS_PORT', default: 6379 }
             ]
         }]
     ],

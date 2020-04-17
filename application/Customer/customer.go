@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,6 +12,7 @@ import (
 // Customer model
 type Customer struct {
 	ID    primitive.ObjectID `bson:"_id,omitempty"`
+	Name  string             `json:"name"`
 	Money float64            `json:"money"`
 	Spent float64            `json:"spent"`
 	Cart  []Product          `json:"cart"`
@@ -17,9 +20,26 @@ type Customer struct {
 
 // NewCustomer returns a new Customer model
 func NewCustomer() *Customer {
-	// id := uuid.New().String()
-	money := genRandomMoney(0, 200)
-	return &Customer{Money: money, Cart: []Product{}}
+
+	surnames, err := fetchData("surnames.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	surname := surnames[genRandom(0, len(surnames)-1)]
+
+	firstnames, err := fetchData("firstnames_m.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	firstname := firstnames[genRandom(0, len(firstnames)-1)]
+	fullname := fmt.Sprintf("%s %s", firstname, surname)
+
+	max, err := strconv.Atoi(getenv("CUSTOMER_MONEY", "200"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	money := genRandomMoney(0, max)
+	return &Customer{Name: fullname, Money: money, Cart: []Product{}}
 }
 
 // AddProduct adds a Product to the Customer cart
@@ -32,7 +52,11 @@ func (c *Customer) TotalSpent(amount float64) {
 	c.Spent = amount
 }
 
-func genRandomMoney(min, max int) float64 {
+func genRandom(min, max int) int {
 	rand.Seed(time.Now().UnixNano())
-	return float64(rand.Intn(max-min+1) + min)
+	return rand.Intn(max-min+1) + min
+}
+
+func genRandomMoney(min, max int) float64 {
+	return float64(genRandom(min, max))
 }

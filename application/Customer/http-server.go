@@ -66,10 +66,12 @@ func createCustomerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.
 		log.Fatalln(err)
 	}
 
-	response, err := http.Post("http://shop:8000/order", "application/json", bytes.NewBuffer(bodyBytes))
+	url := "http://" + getenv("SHOP_HOST", "localhost") + ":" + getenv("SHOP_PORT", "8077") + "/order"
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	products := []Product{}
 	err = json.NewDecoder(response.Body).Decode(&products)
 	if err != nil {
@@ -96,21 +98,7 @@ func createCustomerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.
 	}
 
 	// Logging
-	event := make(map[string]interface{})
-	payload := make(map[string]interface{})
-	cart := []string{}
-	for _, product := range products {
-		cart = append(cart, product.ID)
-	}
-
-	payload["customer_id"] = customer.ID
-	payload["spent"] = total
-	payload["money"] = customer.Money
-	payload["cart"] = cart
-	event["service"] = "customer"
-	event["code"] = "CUSTOMER_BOUGHT"
-	event["body"] = payload
-	Log(event)
+	Log("CUSTOMER_BOUGHT", customer)
 }
 
 func getCustomersHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

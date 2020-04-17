@@ -32,7 +32,7 @@ export default {
     },
     props: {
         stream: {
-             type: Array,
+            type: Array,
             required: false,
             default: []
         }

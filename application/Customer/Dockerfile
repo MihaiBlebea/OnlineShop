@@ -28,6 +28,8 @@ WORKDIR /app
 
 COPY --from=build_base /tmp/go-sample-app/out/go-sample-app /app/go-sample-app
 
+COPY . . 
+
 EXPOSE 8000
 
 # Run the binary program produced by `go install`

@@ -4,11 +4,18 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 // SuppliedProduct is a model that keeps track of the supplied products
 type SuppliedProduct struct {
-	ProductID        primitive.ObjectID `json:"product_id"`
+	ID               primitive.ObjectID `json:"id"`
 	Title            string             `json:"title"`
 	InitQuantity     int                `json:"initial_quantity"`
 	SuppliedQuantity int                `json:"supplied_quantity"`
 	Cost             float64            `json:"cost"`
+}
+
+// SoldProduct is a model for the product sold to customer
+type SoldProduct struct {
+	ID    primitive.ObjectID `json:"id"`
+	Title string             `json:"title"`
+	Price float64            `json:"price"`
 }
 
 // Product is the model for parsing the product json

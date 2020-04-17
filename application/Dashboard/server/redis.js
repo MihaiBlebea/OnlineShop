@@ -1,7 +1,7 @@
 const redis = require("redis")
 
 const connect = ()=> {
-    var client = redis.createClient(6379, 'redis')
+    var client = redis.createClient(process.env.NUXT_ENV_REDIS_PORT, process.env.NUXT_ENV_REDIS_HOST)
     return client
 }
 

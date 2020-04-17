@@ -35,6 +35,7 @@ export default {
     computed: {
         totalCount: function()
         {
+            console.log('AICI', this.data)
             if(!this.data || this.data.length === 0)
             {
                 return 0

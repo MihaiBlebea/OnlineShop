@@ -40,11 +40,9 @@ func supplyShop() {
 	jobName := "SUPPLY_SHOP"
 	startTime := prettyStartPrint(jobName)
 
-	for i := 0; i < 20; i++ {
-		_, err := http.Post("http://shop:8000/supply", "application/json", bytes.NewBuffer(nil))
-		if err != nil {
-			log.Println(err)
-		}
+	_, err := http.Post("http://shop:8000/supply", "application/json", bytes.NewBuffer(nil))
+	if err != nil {
+		log.Println(err)
 	}
 	prettyEndPrint(jobName, startTime)
 }
