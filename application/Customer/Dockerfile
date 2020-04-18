@@ -28,7 +28,7 @@ WORKDIR /app
 
 COPY --from=build_base /tmp/go-sample-app/out/go-sample-app /app/go-sample-app
 
-COPY . . 
+COPY *.json ./
 
 EXPOSE 8000
 

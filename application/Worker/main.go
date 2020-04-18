@@ -13,6 +13,9 @@ import (
 func main() {
 	c := cron.New()
 
+	// Supply shop as first action
+	supplyShop()
+
 	c.AddFunc("*/30 * * * *", supplyShop)
 	c.AddFunc("* * * * *", orderCustomer)
 

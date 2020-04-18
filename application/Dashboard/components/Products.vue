@@ -13,7 +13,7 @@
                 <span>Avr. product value</span>
                 <span>£{{ avrValue }}</span>
             </p>
-            <p class="d-flex justify-content-between">
+            <p class="d-flex justify-content-between mb-0">
                 <span>£ total value</span>
                 <span>£{{ totalValue }}</span>
             </p>

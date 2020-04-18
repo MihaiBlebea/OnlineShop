@@ -2,7 +2,22 @@
 apiVersion: v1 
 kind: ConfigMap 
 metadata:
-    name: example
+    name: production-config
+    namespace: production
 data:
-    database: mongodb
-    database_uri: mongodb://localhost:27017
+    shop.redis_host: "redis"
+    shop.redis_port: "6379"
+    shop.mongo_host: "mongodb-shop"
+    shop.mongo_port: "27017"
+    shop.shop_supply_limit: "10"
+    customer.redis_host: "redis"
+    customer.redis_port: "6379"
+    customer.mongo_host: "mongodb-customer"
+    customer.mongo_port: "27017"
+    customer.shop_host: "shop"
+    customer.shop_port: "8000"
+    customer.customer_money: "200"
+    dashboard.nuxt_env_shop_url: "192.168.50.11:30011"
+    dashboard.nuxt_env_customer_url: "192.168.50.11:30010"
+    dashboard.nuxt_env_redis_host: "redis"
+    dashboard.nuxt_env_redis_port: "6379"

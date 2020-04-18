@@ -43,11 +43,11 @@ export default {
 
             if(this.event.code === 'SHOP_SUPPLIED') 
             {
-                let cost = 0
+                let totalPrice = 0
                 this.event.body.forEach((supply)=> {
-                    return cost += supply.cost
+                    return totalPrice += supply.price
                 })
-                return `Shop received ${ this.event.body.length } products for a total cost of £${ this.parseMoney(cost) }`
+                return `Shop received ${ this.event.body.length } products for a total cost of £${ this.parseMoney(totalPrice) }`
             }
 
             if(this.event.code === 'SHOP_SOLD') 

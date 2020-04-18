@@ -5,7 +5,8 @@
                 <Products :data="products" />
             </div>
             <div class="col-md-6">
-                <Customers :data="customers" />
+                <Customers :data="customers" class="mb-1"/>
+                <Balance :balance="balance" />
             </div>
         </div>
         <div class="row justify-content-center">
@@ -21,12 +22,14 @@ import axios from 'axios'
 import Events from '~/components/Events.vue'
 import Products from'~/components/Products.vue'
 import Customers from '~/components/Customers.vue'
+import Balance from '~/components/Balance.vue'
 
 export default {
     components: {
         Events,
         Products,
-        Customers
+        Customers,
+        Balance
     },
     data: function()
     {
@@ -70,6 +73,16 @@ export default {
                 return []
             }
         },
+        fetchBalance: async function()
+        {
+            try {
+                let { data } = await axios.get(`http://${ this.$env.NUXT_ENV_SHOP_URL }/account/balance`)
+                return data
+            } catch(err) {
+                console.log(err)
+                return []
+            }
+        },
         sleep: function(ms) 
         {
             return new Promise(resolve => setTimeout(resolve, ms))
@@ -81,6 +94,7 @@ export default {
             this.events = await this.fetchEventStream()
             this.customers = await this.fetchCustomers()
             this.products = await this.fetchProducts()
+            this.balance = await this.fetchBalance()
             await this.sleep(10 * 1000)
         }
     }

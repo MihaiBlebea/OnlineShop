@@ -17,7 +17,43 @@ spec:
         spec:
             containers:
                 - name: customer
-                  image: serbanblebea/online-shop-customer:v0.2
+                  image: serbanblebea/online-shop-customer:v0.6
+                  env:
+                    - name: REDIS_HOST
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.redis_host
+                    - name: REDIS_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.redis_port
+                    - name: MONGO_HOST
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.mongo_host
+                    - name: MONGO_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.mongo_port
+                    - name: SHOP_HOST
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.shop_host
+                    - name: SHOP_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.shop_port
+                    - name: CUSTOMER_MONEY
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: customer.customer_money
     replicas: 1
     selector:
         matchLabels:

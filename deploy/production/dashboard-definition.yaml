@@ -17,12 +17,28 @@ spec:
         spec:
             containers:
                 - name: dashboard
-                  image: serbanblebea/online-shop-dashboard:v0.4
+                  image: serbanblebea/online-shop-dashboard:v0.6
                   env:
                     - name: NUXT_ENV_SHOP_URL
-                      value: 192.168.50.12:30011
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: dashboard.nuxt_env_shop_url
                     - name: NUXT_ENV_CUSTOMER_URL
-                      value: 192.168.50.12:30010
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: dashboard.nuxt_env_customer_url
+                    - name: NUXT_ENV_REDIS_HOST
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: dashboard.nuxt_env_redis_host
+                    - name: NUXT_ENV_REDIS_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                            name: production-config
+                            key: dashboard.nuxt_env_redis_port
     replicas: 1
     selector:
         matchLabels:

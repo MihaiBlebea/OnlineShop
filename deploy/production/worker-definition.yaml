@@ -17,7 +17,7 @@ spec:
         spec:
             containers:
                 - name: worker
-                  image: serbanblebea/online-shop-worker:v0.2
+                  image: serbanblebea/online-shop-worker:v0.5
     replicas: 1
     selector:
         matchLabels:

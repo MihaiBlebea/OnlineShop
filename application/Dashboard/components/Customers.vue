@@ -9,7 +9,7 @@
                 <span>Total spent</span>
                 <span>£{{ totalSpent }}</span>
             </p>
-            <p class="d-flex justify-content-between">
+            <p class="d-flex justify-content-between mb-0">
                 <span>Avr. customer spent</span>
                 <span>£{{ avrCustomerSpent }}</span>
             </p>
