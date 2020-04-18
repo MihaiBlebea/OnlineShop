@@ -3,7 +3,7 @@ version: "3.7"
 services:
     shop:
         build: ./../../application/Shop
-        image: serbanblebea/online-shop-shop:v0.5
+        image: serbanblebea/online-shop-shop:v0.6
         container_name: shop
         environment:
             REDIS_HOST: "redis"
