@@ -1,6 +1,10 @@
-package main
+package transaction
 
-import "time"
+import (
+	"time"
+
+	"github.com/MihaiBlebea/OnlineShop/Shop/shop/product"
+)
 
 const (
 	shopName       = "SHOP"
@@ -14,7 +18,7 @@ type Transaction struct {
 	Money     float64
 	Buyer     string
 	Seller    string
-	Products  *[]Product
+	Products  *[]product.Product
 	Timestamp string
 }
 
@@ -26,14 +30,14 @@ func (t *Transaction) IsBuy() bool {
 	return false
 }
 
-// NewTransactionIn returns a Transaction struct
-func NewTransactionIn(Money float64, Products *[]Product) *Transaction {
+// NewIn returns a Transaction struct
+func NewIn(Money float64, Products *[]product.Product) *Transaction {
 	created := time.Now().Format(dateTimeFormat)
 	return &Transaction{Money, shopName, supplierName, Products, created}
 }
 
-// NewTransactionOut returns a Transaction struct
-func NewTransactionOut(Money float64, Products *[]Product) *Transaction {
+// NewOut returns a Transaction struct
+func NewOut(Money float64, Products *[]product.Product) *Transaction {
 	created := time.Now().Format(dateTimeFormat)
 	return &Transaction{Money, customerName, shopName, Products, created}
 }

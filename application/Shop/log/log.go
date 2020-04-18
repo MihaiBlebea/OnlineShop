@@ -1,9 +1,10 @@
-package main
+package log
 
 import (
 	"encoding/json"
 	"time"
 
+	"github.com/MihaiBlebea/OnlineShop/Shop/env"
 	"github.com/go-redis/redis"
 )
 
@@ -26,7 +27,7 @@ func newRedisClient(host, port string) *redis.Client {
 
 // Log saves a json to the event stream in Redis
 func Log(code string, log interface{}) error {
-	client := newRedisClient(getenv("REDIS_HOST", "localhost"), getenv("REDIS_PORT", "6379"))
+	client := newRedisClient(env.Get("REDIS_HOST", "localhost"), env.Get("REDIS_PORT", "6379"))
 	defer client.Close()
 
 	event := Event{"shop", code, log, time.Now().Format("2006-01-02 15:04:05")}

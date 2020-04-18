@@ -1,21 +1,48 @@
-package main
+package product
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/MihaiBlebea/OnlineShop/Shop/env"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// ProductRepository acts like a layer between the domain and the persistence layer
-type ProductRepository struct {
+// Repository acts like a layer between the domain and the persistence layer
+type Repository struct {
+}
+
+// IRepository interface for Repository
+type IRepository interface {
+	Add(product *Product) error
+	All() ([]Product, error)
+	UpdateQuantity(product *Product) error
+	FindByPriceAndRating(price float64) ([]Product, error)
+	FindLowStock() ([]Product, error)
+}
+
+func (r Repository) client() (*mongo.Client, error) {
+	mongoHost := env.Get("MONGO_HOST", "localhost")
+	mongoPort := env.Get("MONGO_PORT", "27016")
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort))
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.TODO()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 // Add inserts a new document in the roducts collection
-func (pr *ProductRepository) Add(product *Product) error {
-	client, err := newMongoConnection()
+func (r Repository) Add(product *Product) error {
+	client, err := r.client()
 	if err != nil {
 		return err
 	}
@@ -32,22 +59,11 @@ func (pr *ProductRepository) Add(product *Product) error {
 	return nil
 }
 
-// AddMany adds more then one document to collection
-func (pr *ProductRepository) AddMany(products []Product) {
-	for _, product := range products {
-		product.IncrementQuantity()
-		err := pr.Add(&product)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-}
-
 // All returns all documents in the collection
-func (pr *ProductRepository) All() ([]Product, error) {
+func (r Repository) All() ([]Product, error) {
 	products := []Product{}
 
-	client, err := newMongoConnection()
+	client, err := r.client()
 	if err != nil {
 		return products, err
 	}
@@ -71,8 +87,8 @@ func (pr *ProductRepository) All() ([]Product, error) {
 }
 
 // UpdateQuantity updates the quantity of the product in stock
-func (pr *ProductRepository) UpdateQuantity(product *Product) error {
-	client, err := newMongoConnection()
+func (r Repository) UpdateQuantity(product *Product) error {
+	client, err := r.client()
 	if err != nil {
 		return err
 	}
@@ -96,10 +112,10 @@ func (pr *ProductRepository) UpdateQuantity(product *Product) error {
 }
 
 // FindByPriceAndRating finds a Product with a fix price and sorted by rating
-func (pr *ProductRepository) FindByPriceAndRating(price float64) ([]Product, error) {
+func (r Repository) FindByPriceAndRating(price float64) ([]Product, error) {
 	products := []Product{}
 
-	client, err := newMongoConnection()
+	client, err := r.client()
 	if err != nil {
 		return products, err
 	}
@@ -127,10 +143,11 @@ func (pr *ProductRepository) FindByPriceAndRating(price float64) ([]Product, err
 	return products, nil
 }
 
-func (pr *ProductRepository) findLowStock() ([]Product, error) {
+// FindLowStock returns products that have low quantity
+func (r Repository) FindLowStock() ([]Product, error) {
 	products := []Product{}
 
-	client, err := newMongoConnection()
+	client, err := r.client()
 	if err != nil {
 		return products, err
 	}
@@ -153,7 +170,7 @@ func (pr *ProductRepository) findLowStock() ([]Product, error) {
 	return products, nil
 }
 
-// NewProductRepo constructs and returns a new ProductRepository struct
-func NewProductRepo() *ProductRepository {
-	return &ProductRepository{}
+// NewRepository constructs and returns a new ProductRepository struct
+func NewRepository() Repository {
+	return Repository{}
 }

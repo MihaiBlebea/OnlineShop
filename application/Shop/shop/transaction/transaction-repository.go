@@ -1,9 +1,12 @@
-package main
+package transaction
 
 import (
 	"context"
 
+	"github.com/MihaiBlebea/OnlineShop/Shop/env"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Transactions Collection name for mongo db
@@ -12,19 +15,36 @@ const transColName = "transactions"
 // Database for mongo db
 const dbName = "shop"
 
-// TransactionRepository persistence layer for Transaction domain
-type TransactionRepository struct {
+// Repository persistence layer for Transaction domain
+type Repository struct {
 }
 
-// ITransactionRepository interface for transaction repository
-type ITransactionRepository interface {
+// IRepository interface for transaction repository
+type IRepository interface {
 	Add(transaction *Transaction) error
 	All() ([]Transaction, error)
 }
 
+func (r Repository) client() (*mongo.Client, error) {
+	mongoHost := env.Get("MONGO_HOST", "localhost")
+	mongoPort := env.Get("MONGO_PORT", "27016")
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort))
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.TODO()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
 // Add saves a Shop struct in the database
-func (tr *TransactionRepository) Add(transaction *Transaction) error {
-	client, err := newMongoConnection()
+func (r Repository) Add(transaction *Transaction) error {
+	client, err := r.client()
 	if err != nil {
 		return err
 	}
@@ -42,10 +62,10 @@ func (tr *TransactionRepository) Add(transaction *Transaction) error {
 }
 
 // All returns all transactions
-func (tr *TransactionRepository) All() ([]Transaction, error) {
+func (r Repository) All() ([]Transaction, error) {
 	transactions := []Transaction{}
 
-	client, err := newMongoConnection()
+	client, err := r.client()
 	if err != nil {
 		return transactions, err
 	}
@@ -67,7 +87,7 @@ func (tr *TransactionRepository) All() ([]Transaction, error) {
 	return transactions, nil
 }
 
-// NewTransactionRepo returns a new TransactionRepository struct
-func NewTransactionRepo() *TransactionRepository {
-	return &TransactionRepository{}
+// NewRepository returns a new Repository struct
+func NewRepository() Repository {
+	return Repository{}
 }

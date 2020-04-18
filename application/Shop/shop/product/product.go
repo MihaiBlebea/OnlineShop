@@ -1,22 +1,6 @@
-package main
+package product
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
-
-// // SuppliedProduct is a model that keeps track of the supplied products
-// type SuppliedProduct struct {
-// 	ID               primitive.ObjectID `json:"id"`
-// 	Title            string             `json:"title"`
-// 	InitQuantity     int                `json:"initial_quantity"`
-// 	SuppliedQuantity int                `json:"supplied_quantity"`
-// 	Cost             float64            `json:"cost"`
-// }
-
-// // SoldProduct is a model for the product sold to customer
-// type SoldProduct struct {
-// 	ID    primitive.ObjectID `json:"id"`
-// 	Title string             `json:"title"`
-// 	Price float64            `json:"price"`
-// }
 
 // Product is the model for parsing the product json
 type Product struct {
@@ -50,4 +34,31 @@ func (p *Product) DecrementQuantity() {
 // SetQuantity sets the quantity on the product
 func (p *Product) SetQuantity(input int) {
 	p.Quantity = input
+}
+
+// New returns a new Product struct
+func New(title, prodType, description, filename string, price float64, rating int, quality int) *Product {
+	return &Product{
+		Title:       title,
+		ProdType:    prodType,
+		Description: description,
+		Filename:    filename,
+		Price:       price,
+		Rating:      rating,
+		Quantity:    quality,
+	}
+}
+
+// WithID returns a new Product struct. Must supply ID
+func WithID(id primitive.ObjectID, title, prodType, description, filename string, price float64, rating int, quality int) *Product {
+	return &Product{
+		ID:          id,
+		Title:       title,
+		ProdType:    prodType,
+		Description: description,
+		Filename:    filename,
+		Price:       price,
+		Rating:      rating,
+		Quantity:    quality,
+	}
 }
