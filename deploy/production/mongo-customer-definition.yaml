@@ -20,6 +20,13 @@ spec:
                   image: mongo:latest
                   ports:
                     - containerPort: 27017
+                  volumeMounts:
+                    - mountPath: "/data/db"
+                      name: mypd
+            volumes:
+                - name: mypd
+                  persistentVolumeClaim:
+                    claimName: pvc-1
     replicas: 1
     selector:
         matchLabels:

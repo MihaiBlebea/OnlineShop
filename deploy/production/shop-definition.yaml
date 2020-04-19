@@ -17,7 +17,7 @@ spec:
         spec:
             containers:
                 - name: shop
-                  image: serbanblebea/online-shop-shop:v0.5
+                  image: serbanblebea/online-shop-shop:v0.6
                   env:
                     - name: REDIS_HOST
                       valueFrom:

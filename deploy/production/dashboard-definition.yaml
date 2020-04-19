@@ -39,7 +39,7 @@ spec:
                         configMapKeyRef:
                             name: production-config
                             key: dashboard.nuxt_env_redis_port
-    replicas: 1
+    replicas: 2
     selector:
         matchLabels:
             app: onlineshop
